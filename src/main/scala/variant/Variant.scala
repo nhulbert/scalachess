@@ -22,6 +22,7 @@ abstract class Variant(
   def horde = this == Horde
   def racingKings = this == RacingKings
   def crazyhouse = this == Crazyhouse
+  def flickChess = this == KnipseSjakk
 
   def exotic = !standard
 
@@ -171,7 +172,7 @@ abstract class Variant(
 
 object Variant {
 
-  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings)
+  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings, KnipseSjakk)
   val byId = all map { v => (v.id, v) } toMap
   val byKey = all map { v => (v.key, v) } toMap
 

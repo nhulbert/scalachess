@@ -26,13 +26,10 @@ object Parser extends scalaz.syntax.ToTraverseOps {
       .replace("e.p.", "") // silly en-passant notation
     for {
       splitted ← splitTagAndMoves(preprocessed)
-      tagStr = splitted._1
-      moveStr = splitted._2
+      (tagStr, moveStr) = splitted
       tags ← TagParser(tagStr)
       parsedMoves ← MovesParser(moveStr)
-      init = parsedMoves._1
-      strMoves = parsedMoves._2
-      resultOption = parsedMoves._3
+      (init, strMoves, resultOption) = parsedMoves
       tags2 = resultOption.filterNot(_ => tags.exists(_.name == Tag.Result)).fold(tags)(t => tags :+ t)
       sans ← objMoves(strMoves, getVariantFromTags(tags2))
     } yield ParsedPgn(init, tags2, sans)

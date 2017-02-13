@@ -2,6 +2,8 @@ package chess
 package format.pgn
 import variant.Standard
 
+import Pos._
+
 class ParserTest extends ChessTest {
 
   import Fixtures._

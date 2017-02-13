@@ -64,6 +64,7 @@ B    RK """)
         val board: Board = """
 PPPPPPPP
 RKRBB   """.chess960
+        val game = Game(board, White)
         "viable moves" in {
           board destsFrom B1 must bePoss()
         }

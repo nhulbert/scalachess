@@ -1,5 +1,7 @@
 package chess
 
+import Pos._
+
 class DividerPerfTest extends ChessTest {
 
   val nb = 500

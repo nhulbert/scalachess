@@ -1,6 +1,8 @@
 package chess
 package variant
 
+import scala.util.Random
+
 case object Chess960 extends Variant(
   id = 2,
   key = "chess960",

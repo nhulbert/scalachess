@@ -1,7 +1,11 @@
 package chess
 package format
 
+import Pos._
+
 class UciMoveTest extends ChessTest {
+
+  import pgn.Fixtures._
 
   "piotr encoding" should {
     "be reflexive" in {

@@ -1,6 +1,8 @@
 package chess
 package format.pgn
 
+import Pos._
+
 class ParserPerfTest extends ChessTest {
 
   val nb = 100

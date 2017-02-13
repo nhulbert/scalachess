@@ -32,17 +32,15 @@ case class Pgn(
     tags = Tag(_.Event, title) :: tags.filterNot(_.name == Tag.Event)
   )
 
-  def render: String = {
+  override def toString = {
     val tagStr = tags mkString "\n"
-    val initStr =
-      if (initial.comments.nonEmpty) initial.comments.mkString("{ ", " } { ", " }\n")
+    val initStr = 
+      if (initial.comments.nonEmpty) initial.comments.mkString("{ ", " } { ", " }\n") 
       else ""
     val turnStr = turns mkString " "
     val endStr = tags find (_.name == Tag.Result) map (_.value) getOrElse ""
     s"$tagStr\n\n$initStr$turnStr $endStr"
   }.trim
-
-  override def toString = render
 }
 
 case class Initial(comments: List[String] = Nil)

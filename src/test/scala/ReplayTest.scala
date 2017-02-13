@@ -1,6 +1,10 @@
 package chess
 
+import Pos._
+
 class ReplayTest extends ChessTest {
+
+  import format.pgn.Fixtures._
 
   "from prod" in {
     "replay from position close chess" in {

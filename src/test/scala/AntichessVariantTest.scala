@@ -1,7 +1,7 @@
 package chess
 
 import scalaz.Validation.FlatMap._
-import variant.Antichess
+import variant.{ Antichess, Standard }
 import format.Forsyth
 
 class AntichessVariantTest extends ChessTest {

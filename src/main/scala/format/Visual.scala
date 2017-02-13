@@ -24,8 +24,10 @@ object Visual {
     }
     Board(
       pieces = (for {
-        (l, y) ← (filtered zipWithIndex)
-        (c, x) ← (l zipWithIndex)
+        line ← (filtered.zipWithIndex)
+        (l, y) = line
+        char ← (l zipWithIndex)
+        (c, x) = char
         role ← Role forsyth c.toLower
       } yield {
         posAt(x + 1, 8 - y) map { pos => pos -> (Color(c isUpper) - role) }

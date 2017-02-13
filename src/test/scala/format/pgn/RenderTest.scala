@@ -1,6 +1,8 @@
 package chess
 package format.pgn
 
+import Pos._
+
 class RenderTest extends ChessTest {
 
   private def glyphs(id: Int) = Glyph.find(id).fold(Glyphs.empty) { g =>

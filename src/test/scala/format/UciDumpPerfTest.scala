@@ -1,6 +1,8 @@
 package chess
 package format
 
+import Pos._
+
 class UciDumpPerfTest extends ChessTest {
 
   val nb = 5

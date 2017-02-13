@@ -56,9 +56,8 @@ object Glyph {
     val interesting = new Glyph(5, "!?", "Interesting move") with MoveAssessment
     val dubious = new Glyph(6, "?!", "Dubious move") with MoveAssessment
     val only = new Glyph(7, "□", "Only move") with MoveAssessment
-    val novelty = new Glyph(146, "N", "Novelty") with MoveAssessment
 
-    val all = List(good, mistake, brillant, blunder, interesting, dubious, only, novelty)
+    val all = List(good, mistake, brillant, blunder, interesting, dubious, only)
     val byId = all.map { g => g.id -> g }.toMap
 
     def display = all
@@ -91,13 +90,14 @@ object Glyph {
     val attack = new Glyph(40, "→", "Attack") with Observation
     val counterplay = new Glyph(132, "⇆", "Counterplay") with Observation
     val timeTrouble = new Glyph(138, "⊕", "Time trouble") with Observation
+    val novelty = new Glyph(146, "N", "Novelty") with Observation
     val compensation = new Glyph(44, "=∞", "With compensation") with Observation
     val withIdea = new Glyph(140, "∆", "With the idea") with Observation
 
-    val all = List(zugzwang, development, initiative, attack, counterplay, timeTrouble, compensation, withIdea)
+    val all = List(zugzwang, development, initiative, attack, counterplay, timeTrouble, novelty, compensation, withIdea)
     val byId = all.map { g => g.id -> g }.toMap
 
-    def display = all
+    def display = all.filterNot(novelty ==)
   }
 
   def find(id: Int): Option[Glyph] =

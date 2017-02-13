@@ -2,7 +2,6 @@ package chess
 package variant
 
 import Pos.posAt
-import scalaz.NonEmptyList
 import scalaz.Validation.FlatMap._
 
 abstract class Variant(
@@ -23,7 +22,7 @@ abstract class Variant(
   def horde = this == Horde
   def racingKings = this == RacingKings
   def crazyhouse = this == Crazyhouse
-  def flickChess = this == KnipseSjakk
+  def flickchess = this == FlickChess
 
   def exotic = !standard
 
@@ -173,7 +172,7 @@ abstract class Variant(
 
 object Variant {
 
-  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings, KnipseSjakk)
+  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings, FlickChess)
   val byId = all map { v => (v.id, v) } toMap
   val byKey = all map { v => (v.key, v) } toMap
 

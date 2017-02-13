@@ -172,7 +172,7 @@ abstract class Variant(
 
 object Variant {
 
-  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings, FlickChess)
+  val all = List(Standard, Crazyhouse, Chess960, FromPosition, KingOfTheHill, ThreeCheck, Antichess, Atomic, Horde, RacingKings, FlickChess
   val byId = all map { v => (v.id, v) } toMap
   val byKey = all map { v => (v.key, v) } toMap
 

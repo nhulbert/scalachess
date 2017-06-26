@@ -5,12 +5,12 @@ import format.Uci
 
 import scalaz.Validation.FlatMap._
 
-case object Crazyhouse extends Variant(
-  id = 10,
-  key = "crazyhouse",
-  name = "Crazyhouse",
-  shortName = "crazy",
-  title = "Captured pieces can be dropped back on the board instead of moving a piece.",
+case object Bughouse extends Variant(
+  id = 11,
+  key = "bughouse",
+  name = "Bughouse",
+  shortName = "bug",
+  title = "A four player, two board variant where each piece you capture is added to your partner's collection, which they may take a piece from to place on their board as their turn.",
   standardInitialPosition = true
 ) {
 
@@ -56,12 +56,15 @@ case object Crazyhouse extends Variant(
   override def finalizeBoard(board: Board, uci: Uci, capture: Option[Piece]): Board = uci match {
     case Uci.Move(orig, dest, promOption) =>
       board.crazyData.fold(board) { data =>
-        val d1 = capture.fold(data) { data.store(_, dest) }
+        val d1 = data //capture.fold(data) { data.store(_, dest) }
         val d2 = promOption.fold(d1.move(orig, dest)) { _ => d1 promote dest }
         board withCrazyData d2
       }
     case _ => board
   }
+
+  def addToPocket(data: Crazyhouse.Data, piece: Piece): Crazyhouse.Data =
+    data.storePiece(piece)
 
   private def canDropStuff(situation: Situation) =
     situation.board.crazyData.fold(false) { (data: Data) =>
@@ -98,67 +101,5 @@ case object Crazyhouse extends Variant(
     }
   }
 
-  val storableRoles = List(Pawn, Knight, Bishop, Rook, Queen)
-
-  case class Data(
-      pockets: Pockets,
-      // in crazyhouse, a promoted piece becomes a pawn
-      // when captured and put in the pocket.
-      // there we need to remember which pieces are issued from promotions.
-      // we do that by tracking their positions on the board.
-      promoted: Set[Pos]
-  ) {
-
-    def drop(piece: Piece): Option[Data] =
-      pockets take piece map { nps =>
-        copy(pockets = nps)
-      }
-
-    def store(piece: Piece, from: Pos) =
-      copy(
-        pockets = pockets store promoted(from).fold(piece.color.pawn, piece),
-        promoted = promoted - from
-      )
-
-    def storePiece(piece: Piece) =
-      copy(
-        pockets = pockets store piece
-      )
-
-    def promote(pos: Pos) = copy(promoted = promoted + pos)
-
-    def move(orig: Pos, dest: Pos) = copy(
-      promoted = if (promoted(orig)) promoted - orig + dest else promoted
-    )
-  }
-
-  object Data {
-    val init = Data(Pockets(Pocket(Nil), Pocket(Nil)), Set.empty)
-  }
-
-  case class Pockets(white: Pocket, black: Pocket) {
-
-    def apply(color: Color) = color.fold(white, black)
-
-    def take(piece: Piece): Option[Pockets] = piece.color.fold(
-      white take piece.role map { np => copy(white = np) },
-      black take piece.role map { np => copy(black = np) }
-    )
-
-    def store(piece: Piece) = copy(
-      white = piece.color.fold(white, white store piece.role),
-      black = piece.color.fold(black store piece.role, black)
-    )
-  }
-
-  case class Pocket(roles: List[Role]) {
-
-    def take(role: Role) =
-      if (roles contains role) Some(copy(roles = roles diff List(role)))
-      else None
-
-    def store(role: Role) =
-      if (storableRoles contains role) copy(roles = role :: roles)
-      else this
-  }
+  case class PieceAdd(piece: Piece, halfMove: Int)
 }

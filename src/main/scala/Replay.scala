@@ -2,6 +2,7 @@ package chess
 
 import chess.format.pgn.San
 import chess.format.{ Forsyth, FEN, Uci }
+import chess.variant.{ Bughouse }
 import format.pgn.{ Parser, Reader, Tag }
 import scalaz.Validation.FlatMap._
 import scalaz.Validation.{ failureNel, success }
@@ -61,14 +62,29 @@ object Replay {
   def gameMoveWhileValid(
     moveStrs: List[String],
     initialFen: String,
-    variant: chess.variant.Variant
+    variant: chess.variant.Variant,
+    bugPieceAdds: Option[List[Bughouse.PieceAdd]] = None
   ): (Game, List[(Game, Uci.WithSan)], Option[ErrorMessage]) = {
-
+    var moveNum = 0
+    val itO = bugPieceAdds.map(_.reverseIterator.buffered)
+    def addBugPieces(game: Game) = {
+      (for {
+        it <- itO
+        cd <- game.situation.board.crazyData
+      } yield {
+        var cdNew = cd
+        while (it.hasNext && it.head.halfMove <= moveNum) {
+          cdNew = cdNew.storePiece(it.next().piece)
+        }
+        game.withBoard(game.board.withCrazyData(cdNew))
+      }).getOrElse(game)
+    }
     def mk(g: Game, moves: List[(San, String)]): (List[(Game, Uci.WithSan)], Option[ErrorMessage]) = moves match {
       case (san, sanStr) :: rest => san(g.situation).fold(
         err => (Nil, err.head.some),
         moveOrDrop => {
-          val newGame = moveOrDrop.fold(g.apply, g.applyDrop)
+          moveNum += 1
+          val newGame = addBugPieces(moveOrDrop.fold(g.apply, g.applyDrop))
           val uci = moveOrDrop.fold(_.toUci, _.toUci)
           mk(newGame, rest) match {
             case (next, msg) => ((newGame, Uci.WithSan(uci, sanStr)) :: next, msg)
@@ -77,7 +93,7 @@ object Replay {
       )
       case _ => (Nil, None)
     }
-    val init = Game(variant.some, initialFen.some)
+    val init = addBugPieces(Game(variant.some, initialFen.some))
     Parser.moves(moveStrs, variant).fold(
       err => List.empty[(Game, Uci.WithSan)] -> err.head.some,
       moves => mk(init, moves zip moveStrs)

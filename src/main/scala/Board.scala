@@ -4,13 +4,14 @@ import Pos.posAt
 import scala.collection.breakOut
 import scalaz.Validation.FlatMap._
 import scalaz.Validation.{ failureNel, success }
-import variant.{ Variant, Crazyhouse }
+import variant.{ Variant, Crazyhouse, Bughouse }
 
 case class Board(
     pieces: PieceMap,
     history: History,
     variant: Variant,
-    crazyData: Option[Crazyhouse.Data] = None
+    crazyData: Option[Crazyhouse.Data] = None,
+    bugPieceAdds: Option[List[Bughouse.PieceAdd]]
 ) {
 
   import implicitFailures._
@@ -112,7 +113,7 @@ case class Board(
   def withPieces(newPieces: PieceMap) = copy(pieces = newPieces)
 
   def withVariant(v: Variant): Board = {
-    if (v == Crazyhouse)
+    if (v == Crazyhouse || v == Bughouse)
       copy(variant = v).ensureCrazyData
     else
       copy(variant = v)
@@ -181,12 +182,15 @@ object Board {
     Board(pieces.toMap, if (variant.allowsCastling) Castles.all else Castles.none, variant)
 
   def apply(pieces: Traversable[(Pos, Piece)], castles: Castles, variant: Variant): Board =
-    Board(pieces.toMap, History(castles = castles), variant, variantCrazyData(variant))
+    Board(pieces.toMap, History(castles = castles), variant, variantCrazyData(variant), variantBugPieceAdds(variant))
 
   def init(variant: Variant): Board = Board(variant.pieces, variant.castles, variant)
 
   def empty(variant: Variant): Board = Board(Nil, variant)
 
   private def variantCrazyData(variant: Variant) =
-    (variant == Crazyhouse) option Crazyhouse.Data.init
+    (variant == Crazyhouse || variant == Bughouse) option Crazyhouse.Data.init
+
+  private def variantBugPieceAdds(variant: Variant) =
+    (variant == Bughouse) option Nil
 }

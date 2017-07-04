@@ -14,6 +14,7 @@ case class Situation(board: Board, color: Color) {
 
   def drops: Option[List[Pos]] = board.variant match {
     case v @ variant.Crazyhouse => v possibleDrops this
+    case v @ variant.Bughouse => v possibleDrops this
     case _ => None
   }
 

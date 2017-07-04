@@ -66,13 +66,10 @@ case object Bughouse extends Variant(
   def addToPocket(data: Crazyhouse.Data, piece: Piece): Crazyhouse.Data =
     data.storePiece(piece)
 
-  private def canDropStuff(situation: Situation) =
-    situation.board.crazyData.fold(false) { (data: Data) =>
-      val roles = data.pockets(situation.color).roles
-      roles.nonEmpty && possibleDrops(situation).fold(true) { squares =>
-        squares.nonEmpty && {
-          squares.exists(canDropPawnOn) || roles.exists(chess.Pawn !=)
-        }
+  private def canDropStuff(situation: Situation) = // Different than Crazyhouse: any piece has the possibility of being
+    situation.board.crazyData.fold(false) { (data: Crazyhouse.Data) => // dropped on any turn, TODO: add detection of
+      possibleDrops(situation).fold(true) { squares => // checkmate situation that requires evaluation of both boards
+        squares.nonEmpty // (without this clock will need to time out before game is forced to end)
       }
     }
 

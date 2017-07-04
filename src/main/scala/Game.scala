@@ -56,9 +56,18 @@ case class Game(
 
   private def applyClock(metrics: MoveMetrics, withInc: Boolean) = clock.map { c =>
     c.step(metrics, withInc) getOrElse {
-      if (turns - startedAtTurn == 1) c.switch.start
+      val unclockedTurns = if (board.variant == variant.Bughouse) 1 else 2;
+      if (turns - startedAtTurn == unclockedTurns - 1) c.switch.start
       else c.switch
     }
+  }
+
+  def applyForceStartClock(timer: Timestamp): Game = {
+    copy(
+      clock = clock.map { c =>
+        c.startWithTimeStamp(timer)
+      }
+    )
   }
 
   def apply(uci: Uci.Move): Valid[(Game, Move)] = apply(uci.orig, uci.dest, uci.promotion)

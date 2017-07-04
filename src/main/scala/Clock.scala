@@ -36,6 +36,8 @@ case class Clock(
 
   def start = if (isRunning) this else copy(timer = Some(now))
 
+  def startWithTimeStamp(timestamp: Timestamp) = if (isRunning) this else copy(timer = Some(timestamp))
+
   def stop = timer.fold(this) { t =>
     copy(
       players = players.update(color, _.takeTime(toNow(t))),

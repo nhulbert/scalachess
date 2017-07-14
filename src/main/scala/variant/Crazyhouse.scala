@@ -125,6 +125,11 @@ case object Crazyhouse extends Variant(
         pockets = pockets store piece
       )
 
+    def removePromoted(from: Pos) =
+      copy(
+        promoted = promoted - from
+      )
+
     def promote(pos: Pos) = copy(promoted = promoted + pos)
 
     def move(orig: Pos, dest: Pos) = copy(

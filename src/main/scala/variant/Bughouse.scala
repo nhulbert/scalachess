@@ -56,7 +56,7 @@ case object Bughouse extends Variant(
   override def finalizeBoard(board: Board, uci: Uci, capture: Option[Piece]): Board = uci match {
     case Uci.Move(orig, dest, promOption) =>
       board.crazyData.fold(board) { data =>
-        val d1 = data //capture.fold(data) { data.store(_, dest) }
+        val d1 = capture.fold(data) { _ => data.removePromoted(dest) }
         val d2 = promOption.fold(d1.move(orig, dest)) { _ => d1 promote dest }
         board withCrazyData d2
       }
